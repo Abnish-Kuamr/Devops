@@ -1,0 +1,1376 @@
+
+===========================
+1> Linux installation:
+=============================
+-> As Linux OS is open source, so many people and companies taken that Linux OS 
+  and modified according to their requirement and released into market with different names those are called as Linux Distributions.
+
+
+RHEL  -- RED HAT
+Ubuntu OS
+Cent OS
+Fedora
+Open SUSE
+Kali Linux
+Debian 
+
+Note : 200+ Linux Distributions are available in the market.
+
+
+
+Environment Setup
+-----------------
+
+=> We can setup Linux Machine in 2 ways
+
+1) By using Hypervisor with Virtual Box
+
+2) Cloud VM
+
+
+---------------------------------------------------------------------------------------------
+
+1) Create account in AWS (it will ask debit/credit card) - selected cards are accepted
+
+2) Create Linux VM using AWS EC2 service (download key pair)
+
+3) Convert .pem to .ppk using puttygen software
+
+4) Open putty S/w and connect to EC2 VM using IP & PPK file
+
+---------------------------------------------------------------------------------------------
+
+Linux VM is ready. It is up and running in AWS Cloud
+
+We are able to connect with Linux VM using Putty S/w
+================================================================================================= 
+
+
+
+
+
+=========
+2> MAVEM
+========
+
+Maven Installation
+++++++++++++++++++
+
+1) Download and install Java software
+
+-> When we install java we will below 2 things
+
+		a) JDK (Java Development Kit) 
+
+		b) JRE (Java Runtime Environment)
+
+-> JDK contains set of tools to develop java programs
+
+-> JRE contains platform/environment which is used to run java programs
+
+Link To Download Java : https://www.oracle.com/in/java/technologies/javase/javase8-archive-downloads.html
+
+2) Set JAVA_HOME in Environment Variables (System Env Variables)
+
+			User Environment Variables: Specific to particular account which logged in our PC
+
+			System Envrionment Variables : For All Accounts
+
+Note: Environment Variables will be used by operating system
+
+			JAVA_HOME = C:\Program Files\Java\jdk1.8.0_202
+
+3) Set Path for JAVA (Go to System Env Variables -> Env Variables -> System Variables -> Select Path and Click on Edit then add JDK path)
+
+			Path = C:\Program Files\Java\jdk1.8.0_202\bin
+
+4) Verify Java installation by executing below command in "Command Promot"
+
+			> java -version
+
+Note: It should dipslay java version which we have installed
+
+5) Download Maven software from Apache website
+
+		Link To download Maven : https://maven.apache.org/download.cgi
+		File Name : 	apache-maven-3.8.5-bin.zip (Binary Archive)
+
+6) Extract Maven Zip file -> Copy extracted maven folder and paste it in "C" drive
+
+7) Set MAVEN_HOME in System Environment Variables
+
+		MAVEN_HOME = C:\apache-maven-3.8.5
+
+8) Set Path for Maven in System Environment Variables
+
+		Path : C:\apache-maven-3.8.5\bin
+
+9) Open Command Prompt and verify Maven Installaton using below command
+
+		> mvn -version
+-------------------------------------------------------------------------------------- 
+
+Creating standalone application using maven
++++++++++++++++++++++++++++++++++++++++++++++
+
+1) Create one folder for maven practise 
+
+2) Open Command prompt from that folder
+
+3) Execute below command to create maven project
+
+
+>> mvn archetype:generate -DgroupId=in.ashokit -DartifactId=01-Maven-App -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+------------------------------------------------------------------------------------------------------------------------------------------------------ 
+===================================================================================================================================================== 
+
+
+
+============
+3> TOMCAT
+============= 
+Working with Apache Tomact in Linux
+++++++++++++++++++++++++++++++++++++
+
+-> Login into AWS Management Console
+
+-> Create EC2 Instance (Amazon Linux AMI)
+
+-> Connect to EC2 instance using MobaXterm / Putty
+
+-> install java software using below command 
+
+		$ sudo yum install java-1.8.0-openjdk
+
+-> Verify the version of java installed in our machine 
+
+		$ java -version
+
+Note: If we have multiple java versions installed then we can switch to particular version using below command
+
+	$ alternatives --config java
+
+-> We can download apache tomcat from official website
+		
+	URL  : https://tomcat.apache.org/download-90.cgi
+
+-> We can find apache tomcat urls to download in official website downloads page
+
+-> Copy the URL of tar file and execute below command in linux machine
+
+		$ wget <tomact-tar-file-url>
+
+Note: I am using 
+
+	"https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.63/bin/apache-tomcat-9.0.63.tar.gz"
+
+-> After tomact tar file got downloaded then extract Tomcat Tar file using below command
+	
+		$ tar -xvf <tomact-tar-file-name>
+
+-> Go inside tomcat folder and see folder structure
+
+		$ cd tomact-folder
+		$ ls -ltr
+
+-> Go to tomact bin directory and run tomact server
+
+	$ cd bin
+	$ ./startup.sh
+
+Note: Tomcat Server runs on 8080 port by default. Enable this port in security group as custom tcp
+
+Type : Custom TCP
+Protoal : TCP
+Port Range: 8080
+Source : Custom (0.0.0.0/0)
+
+-> Access Tomact server from your browser
+
+	URL : http://EC2-VM-Public-IP:8080/
+
+Note: It should open tomact server home page.
+
+
+--------------------------------------------------------------------------------------------------
+
+=> By default the Host Manager is only accessible from a browser running on the same machine as Tomcat. If you wish to modify this restriction, you'll need to edit the Host Manager's context.xml file.
+
+=> File Location : <tomcat>/webapps/manager/META-INF/context.xml
+
+=> In Manager context.xml file, change <Valve> section like below (allow attribute value changed)
+
+<Context antiResourceLocking="false" privileged="true" >
+     <Valve className="org.apache.catalina.valves.RemoteAddrValve" allow=".*" />
+</Context>
+
+
+Add tomact users in "tomact-folder/conf/tomact-users.xml" file like below 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<role rolename="manager-gui" />
+<user username="tomcat" password="tomcat" roles="manager-gui" />
+<role rolename="admin-gui" />
+<user username="admin" password="admin" roles="manager-gui,admin-gui"/>
+
+-> Stop the tomact server and start it
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+We can change tomcat server default port in tomact/conf/server.xml file 
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+-> When we change tomact port number in server.xml file then we have to enable that port in Security Group which is associated with our EC2 instance.
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Steps to display Maven Web Application in Tomcat Server
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+1) Create Maven Web application
+
+2) Edit "index.jsp" file like below (File Location : project-folder\src\main\webapp)
+
+<html>
+<body>
+<h1><font color='red'>Welcome to Ashok IT..!!<font></h1>
+<h2>Learn Here.. Lead Anywhere..!! </h2>
+
+<a href="https://ashokitech.com/online-training-schedules">Click Here To See Training Schedules</a>
+</body>
+</html>
+
+3) Package maven web application as war file using maven goals
+
+	$ mvn clean package
+	
+4) Go to Tomcat Server Admin Dashboard and click on "Manager App"
+
+5) Select War file to upload and click on 'deploy' button
+
+6) War file will be deployed and it will display in applications 
+
+7) Click on Application Path (It will open the application in browser)
+--------------------------------------------------------------------------------------------------------------------------------------
+=================================================================================================================================== 
+
+
+
+##################
+4> Nexus Setup
+##################
+
+-> Take t2.medium instance
+
+-> Java s/w is required to install Nexus
+
+-> Connect to t2.medium instance using mobaxterm
+
+
+#  Nexus S/w Installation Process in Linux OS
+
+$ sudo su -
+
+$ cd /opt
+
+$ yum install tar wget -y
+
+Note: https://help.sonatype.com/repomanager3/product-information/download
+
+# latest version
+$ wget https://download.sonatype.com/nexus/3/nexus-3.40.1-01-unix.tar.gz
+
+# old version
+$ wget http://download.sonatype.com/nexus/3/nexus-3.15.2-01-unix.tar.gz
+
+$ tar -zxvf nexus-3.40.1-01-unix.tar.gz
+
+$ mv /opt/nexus-3.40.1-01 /opt/nexus
+
+
+#As a good security practice, Nexus is not advised to run nexus service as a root user, so create a new user called nexus and grant sudo access to manage nexus services as follows.
+ 
+$ useradd nexus
+
+#Give the sudo access to nexus user
+
+$ visudo
+nexus ALL=(ALL) NOPASSWD: ALL
+
+#Change the owner and group permissions to /opt/nexus and /opt/sonatype-work directories.
+
+$ chown -R nexus:nexus /opt/nexus
+$ chown -R nexus:nexus /opt/sonatype-work
+$ chmod -R 775 /opt/nexus
+$ chmod -R 775 /opt/sonatype-work
+
+# Open /opt/nexus/bin/nexus.rc file and  uncomment run_as_user parameter and set as nexus user.
+
+$ vi /opt/nexus/bin/nexus.rc
+run_as_user="nexus"
+
+# Create nexus as a service
+
+$ ln -s /opt/nexus/bin/nexus /etc/init.d/nexus
+
+# install java 1.8v 
+$ sudo yum install java-1.8.0-openjdk
+
+# Switch as a nexus user and start the nexus service as follows.
+
+$ su - nexus
+
+# Enable the nexus services
+$ sudo systemctl enable nexus
+
+# Start the nexus service
+$ sudo systemctl start nexus
+
+#Access the Nexus server from Laptop/Desktop browser.
+ 
+URL : http://IPAddess:8081/
+
+Note: Enable this 8081 port number in Security Group
+
+# Default Username
+User Name: admin
+
+# we can copy nexus password using below command
+$ sudo cat /opt/sonatype-work/nexus3/admin.password
+
+
+-> We can change nexus default properties 
+
+	/opt/nexus/etc/nexus.properties
+============================================================================= 
+
+####################################
+Integrate Maven with Nexus
+####################################
+
+-> Create Repositories in Nexus to store build artifacts
+
+-> We will create 2 types of repositories in Nexus
+
+	1) snapshot
+
+	2) release
+
+-> If project is under development then that project build artifacts will be stored into snapshot repository
+
+-> If project development completed and released to production then that project build artifacts will be stored to release repository
+
+Snanpshot Repo URL : http://13.233.238.64:8081/repository/ashokit_snapshot_repo/
+
+Release Repo URL : http://13.233.238.64:8081/repository/ashokit_release_repo/
+
+Note: Based on <version/> name available in project pom.xml file it will decide artifacts should be stored to which repository
+
+-> Nexus Repository details we will configure in project pom.xml  file like below
+
+
+  <distributionManagement>  
+	<repository>
+		<id>nexus</id>
+		<name>Ashok IT Releases Nexus Repo</name>
+		<url>http://15.207.19.102:8081/repository/ashokit-release-repository/</url>
+	</repository>
+	
+	<snapshotRepository>
+		<id>nexus</id>
+		<name>Ashok IT Snapshots Nexus Repo</name>
+		<url>http://15.207.19.102:8081/repository/ashokit-snapshot-repository/</url>
+	</snapshotRepository>	
+</distributionManagement>
+
+-> Nexus Server Credentials will be configured in Maven "settings.xml" file
+
+-> Maven Location : C:\apache-maven-3.8.5\conf
+
+-> In settings.xml file, under <servers> tag add below <server> tag
+
+	<server>
+		<id>nexus</id>
+		<username>admin</username>
+		<password>admin@123</username>
+	</server>
+
+
+-> Once these details are configured then we can run below maven goal to upload build artifacts to Nexus Server
+
+	$ mvn clean deploy
+--------------------------------------------------------------------------------------------------------------------------- 
+
+
+#######################
+5> SONARQUBE
+#####################
+
+Environment Setup
+++++++++++++++++++
+
+-> Java is the pre-requisite software 
+
+7.6 --> Java 1.8v
+
+7.8 - 8.x --> Java 11v
+
+Note: We can check this compatability in official sonar website
+
+
+Hardware Requirements
++++++++++++++++++++++
+Minimum RAM : 2 GB
+
+
+t2.micro ---> 1 GB RAM
+
+t2.medium ---> 4 GB RAM
+
+
+Sonar Qube Architecture
++++++++++++++++++++++++
+
+1) SonarQube Scanner 
+
+(it will take source code as input and it will generate report)
+
+2) SonarQube Server 
+
+-> SonarQube Server contains 3 components 
+
+1) Compute Engine
+2) Database
+3) WebServer
+4) Search Engine 
+
+       - Compute Engine
+				- Vulnerabilities
+			    - Bugs
+				- Code Smells
+		
+
+Note: Compute Engine will store report into H2 DB (we can configure external db also)
+
+		- WebServer (it will display report in webserver)
+		
+Note: Developers will see sonar report and will fix the issues 
+
+		- Search Engine (it will give search results)
+		
+		
+-> Create EC2 instance with 4 GB RAM (t2.medium)
+
+-> Connect with EC2 instance 
+
+-> check space (free -h)
+
+$ sudo su
+$ yum install wget -y
+$ cd /opt
+$ sudo yum install java-1.8.0-openjdk
+$ java -version
+$ yum install wget unzip -y
+$ wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-7.8.zip
+$ unzip sonarqube-7.8.zip
+
+Note: SonarQube server will not run with root user
+
+-> Create new user
+$ useradd sonar
+$ visudo
+
+-> Configure sudo user without pwd 
+sonar ALL=(ALL) NOPASSWD: ALL
+
+-> Change ownership for sonar folder
+$ chown -R sonar:sonar /opt/sonarqube-7.8/
+$ chmod -R 775 /opt/sonarqube-7.8
+$ su - sonar (switching to sonar user)
+
+-> Goto bin directory then goto linux directory and run sonar server 
+
+$ sh sonar.sh start
+
+-> Check sonar server status 
+
+$ sh sonar.sh status
+
+Note: Sonar Server runs on 9000 port number by default
+
+-> Enable port number in EC2 VM - Security Group
+
+-> Access Sonar Server in Browser 
+
+		URL : http://VM-IP:9000/
+
+-> Default Credentials of Sonar User is admin & admin 
+
+-> After login, we can go to Security and we can enable Force Authentication.
+
+Note: Once your work got completed then stop your EC2 instance because we have t2.medium so bill be generated.
+
+--------------------------------------------------------------------------------------------------
+-> start sonar server 
+
+-> Go to sonar server bin folder 
+
+-> Switch to sonar user 
+
+$ sh sonar.sh start
+
+Note: Search Engine can't run with root user
+
+$ sh sonar.sh status 
+
+Note: If sonar not started, then go to log file and see 
+
+$ sudo rum -rf /opt/sonar-folder/temp/
+
+$ cd ../bin/
+
+$ sh sonar.sh start
+
+$ sh sonar.sh status
+
+-> Access sonar server in browser and login into that
+
++++++++++++++++++++++++++++++++++++++++++++
+Integrate Sonar server with Java Maven App
++++++++++++++++++++++++++++++++++++++++++++
+
+-> Configure Sonar Properties under <properties/> tag in "pom.xml"
+
+  <properties>
+	<sonar.host.url>http://3.110.114.186:9000/</sonar.host.url>
+	<sonar.login>admin</sonar.login>
+	<sonar.password>admin</sonar.password>
+  </properties>
+	
+-> Go to project pom.xml file location and execute below goal
+
+			$ mvn sonar:sonar
+
+
+-> After build success, goto sonar dashboard and verify that 
+
+Note: Instead of username and pwd we can configure sonar token in pom.xml
+
+
+++++++++++++++++++++++++++
+Working with Sonar Token
++++++++++++++++++++++++++++
+-> Goto Sonar -> Login -> Click on profile -> My Account -> Security -> Generate Token 
+
+-> Copy the token and configure that token in pom.xml file like below
+	
+	<sonar.host.url>http://3.110.114.186:9000/</sonar.host.url>
+	<sonar.login>9ba2f624c854238b78592f544de655f1c272b92e</sonar.login>
+
+-> Then build the project using "mvn sonar:sonar" goal
+
++++++++++++++++++++++++++++++++
+Sonar Server with Jenkins Integration
++++++++++++++++++++++++++++++++
+
+Pre-Requisites
+--------------------
+1) Sonar Qube Server
+2) Jenkins Server
+
+=> On SonarQube Server Generate a Token
+
+=> On Jenkins Server 
+		- install apache maven
+		- Install Sonar Plugin
+		- Configure SonarServer with Token
+		- Install Sonar Scanner
+		- Run Jenkins Pipeline Job
+
+
+
+
+-> Connect to Jenkins server VM using mobaxterm and start sonar server
+
+-> Access Sonar Server in browser & generate token
+
+-> Connect to  Jenkins Server using MobaXterm
+
+-> Execute below commands in Jenkins Server VM
+
+$ sudo su
+$ cd /opt
+$ wget https://mirrors.estointernet.in/apache/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.tar.gz
+$ tar -xvf apache-maven-3.6.3-bin.tar.gz
+
+
+-> Manage Jenkins -> Plugins -> Available -> Sonar Qube Scanner Plugin -> Install it 
+
+-> Manage Jenkins -> Configure System -> Sonar Qube Servers -> Add Sonar Qube Server 
+		
+				- Name : Sonar-Server-7.8
+				- Server URL : http://52.66.247.11:9000/   (Give your sonar server url here)
+				- Add Sonar Server Token			
+
+				(Token we should add as secret text)
+
+				(Save it)
+
+-> Manage Jenkins ->  Global Tools Configuration - > SonarQube Scanner
+
+			      - Name : Sonar-Scanner-4.7
+			      - Select Sonar Version ( SonarQube Scanner - 4.7)
+
+				(Save it) 
+
+-> Goto jenkins dashboard -> click on 'New Item -> Enter Item name -> Select Pipeline ->  Click on Next
+
+-> Enter below pipeline script in given text box
+
+pipeline{
+    agent any
+    environment {
+        PATH = "$PATH:/opt/apache-maven-3.6.3/bin"
+    }
+    stages{
+       stage('GetCode'){
+            steps{
+                git ''https://github.com/ashokitschool/maven-web-app.git"
+            }
+         }        
+       stage('Build'){
+            steps{
+                sh 'mvn clean package'
+            }
+         }
+        stage('SonarQube analysis') {
+//    def scannerHome = tool 'SonarScanner 4.0';
+        steps{
+        withSonarQubeEnv('Sonar-Server-7.8') { 
+        // If you have configured more than one global server connection, you can specify its name
+//      sh "${scannerHome}/bin/sonar-scanner"
+        sh "mvn sonar:sonar"
+    }
+        }
+        }
+       
+    }
+}
+---------------------------------------------------------------------------------------------------------
+
+###############
+6> GIT
+############## 
+Environment Setup to work with Git Hub
+++++++++++++++++++++++++++++++++++++++
+
+1) Create Github account ( www.github.com )
+
+2) Download and install Git Client software ( https://git-scm.com/downloads )
+
+3) Once installation completed, right click on the mouse and verify git options display
+   (If git options displaying our git client installation completed successfully)
+------------------------------------------------------------------------------------------------------ 
+
+Installing git on a Linux(Ubuntu):
+
+1. Update the apt-repository
+   sudo apt-get update
+
+2. Install git
+   sudo apt-get install -y git
+
+3. To check the version of git
+   git –-version
+
+Configuration:
+Setting username and email globally for all users
+
+  git config --global user.name "tanti"
+  git config --global user.email tanti@gmail.com
+
+To see the list of all default configuration
+  git config --global –-list
+--------------------------------------------------------- 
+
+Installing RHEL,Centos,Fedora
+
+1 Open terminal in the linux server
+
+2 Update the yum repository
+  Yum update -y
+
+3 Install git
+  Yum install git -y
+
+Configuration:
+Setting username and email globally for all users
+  git config --global user.name "tanti"
+  git config --global user.email tanti@gmail.com
+
+To see the list of all default configuration
+  git config --global –list
+-------------------------------------------------------- 
+
+#################
+7> DOCKER
+##############
+
+
+How to Install Docker in Ubuntu Machine
+
+1. Launch Docker Machine.
+2. Connect to Docker Linux EC2 Terminal through Putty or gitbash.
+3. Switch to root user.
+   sudo su -
+
+4. Update Server Packages.
+   apt-get update -y
+
+5. Install Docker Package.
+   open http://get.docker.com
+
+  Copy the first 2 commands and paste them in a linux terminal
+  $curl -fsSL get.docker.com -o get-docker.sh
+  $sh get-docker.sh
+
+  check docker version
+  docker --version
+
+6. Start the service of Docker.
+   service docker start
+
+7. Verify the status of Docker.
+   service docker status
+------------------------------------------------------------------------------------------
+
+++++++++Install Docker in Amazon Linux++++++++++++
+
+$ sudo yum update -y
+$ sudo yum install docker -y
+$ sudo service docker start
+
+# add user to docker group by executing below command
+$ sudo usermod -aG docker ec2-user
+
+$ docker info
+
+#Restart the session
+$ exit
+-------------------------------------------------------------------------------------------
+
+#install-compose
+----------------
+
+https://docs.docker.com/compose/install/#install-compose
+
+Click on linux tab
+
+Copy and paste the below 2 commands
+sudo curl -L   https://github.com/docker/compose/releases/download/1.17.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose
+
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+To check if docker compose is installed or not
+docker-compose --version
+--------------------------------------------------------------------------------------------------------
+
+
+################
+Docker Swarm
+++++++++++++++
+Setup of Docker swarm
+
+1 Create 3 linux vm's and install docker on all of them
+2 Name the 1st machine as manager and the other 2 as worker1 and worker2
+3 Go to the manager machine and create a docker swarm
+  Capture the ip adress of this machine
+
+   docker swarm init --advertise-addr 192.168.62.100
+
+4 In the output of the above command it will display the command to join a worker to the docker swarm
+
+5 Copy that command and paste it in worker1 and worker2
+
+3 To find the list of machines running in docker swarm
+  docker node ls
+-------------------------------------------------------- 
+
+1> Create 3 Aws ubuntu instance and install docker on all of them
+2> Name the 1st machine as manager and the other 2 as worker1 and worker2
+
+   The main machine where we create the swarm is called as manager
+   and the rest of machines are called workers
+    
+    install Docker :
+     How to Install Docker in Ubuntu Machine
+
+     sudo su -
+
+    Update Server Packages.
+     apt-get update -y
+
+    Install Docker Package.
+     open http://get.docker.com
+
+  Copy the first 2 commands and paste them in a linux terminal
+    $curl -fsSL get.docker.com -o get-docker.sh
+    $sh get-docker.sh
+
+   check docker version
+    docker --version
+
+  Start the service of Docker.
+    service docker start
+
+   Verify the status of Docker.
+     service docker status
+
+3> Go to the manager machine and create a docker swarm
+  Capture the pvt ip adress of this machine
+  docker swarm init --advertise-addr pvt_ip_of_the_manager
+
+
+4>In the output of the above command it will display the command to join a worker to the docker swarm
+   The above command will generate a token id, copy this token id
+   paste it in worker1 and worker2 Machine
+   and they will join docker swarm as a workers
+
+5> To find the list of machines running in docker swarm (manager machine)
+   docker node ls
+
+Note: Enable 2377 port for Swarm Cluster Communications
+-------------------------------------------------------------------------------------------------------
+
+#########################
+8> JENKINS
+############################# 
+Jenkins Installation:
++++++++++++++++++++++++++
+Prerequisite:
+
+    One EC2 Amazon Linux 2 instance with internet access
+    Java 8 runtime environments
+
+Step1
+	
+#####################################
+## Jenkins installation on AWS EC2 ##
+#####################################
+## Create an EC2 instance with Amazon Linux 2 AMI 
+## Amazon Linux 2 AMI (HVM), SSD Volume Type
+## Connect to your EC2 instance
+ 
+## Update all packages
+	$ sudo yum update -y
+ 
+## Install Java 
+	$ sudo yum install java-1.8.0-openjdk-devel
+
+Step2
+
+## Jenkins installation on AWS EC2 using YUM ##
+###############################################
+ 
+## Add Jenkins repo to your yum repository
+$ sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat/jenkins.repo
+ 
+## Import a key file from Jenkins-CI to enable installation from the package
+$ sudo rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+ 
+## For Amazon Linux 2
+$ sudo amazon-linux-extras install epel
+ 
+## Install Jenkins
+$ sudo yum install jenkins -y
+ 
+## Start and enable Jenkins service
+$ sudo systemctl start jenkins
+$ sudo systemctl enable jenkins
+$ sudo systemctl status jenkins
+ 
+## Get the initial administrative password 
+$ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+pwd : 5fe6ddcc9db244cab6aca5ccf2d6a83a
+
+
+Step3:
+Open your EC2 instance public DNS or public IP (http://<PUBLIC_DNS/PUBLIC_IP>:8080/) along with port 8080 in your favorite browser. And provide the administrative password obtained during the installation.
+
+Note: Make sure you enabled 8080 port in Security Group Inbound Rules which is attached to EC2 instance.
+
+			URL : http://43.204.214.21:8080/
+
+-> Provide pwd which we have copied to unlock jenkins
+
+-> Select "Install Suggested Plugins" card (it will install those plugins)
+
+-> Create Admin account
+------------------------------------------------------------------------------------------------------------------
+
+
+
+#################
+8> K8-AWS-EKS
+#################
+
+#################################
+Steps to Create EKS Cluster in AWS
+#################################
+
+
+Step-1) Create VPC using Cloud Formation ( with below S3 URL )
+
+URL : https://s3.us-west-2.amazonaws.com/amazon-eks/cloudformation/2020-10-29/amazon-eks-vpc-private-subnets.yaml
+
+Stack name : EKSVPCCloudFormation
+
+
+Step-2) Create IAM role in AWS
+
+		-> Entity Type : AWS Service
+
+		-> Select Usecase as 'EKS' ==> EKS Cluster
+		
+		-> Role Name : EKSClusterRole  (you can give any name for the role)
+
+
+Step-3) Create EKS Cluster using Created VPC and IAM Role
+
+			-> Cluster endpoint access : Public & Private
+
+
+Step-4) Create RedHat ec2 Instance  (K8S_Client_Machine)
+   
+-> Connect to K8S_Client_Machine using Mobaxterm
+  
+######## Install Kubectl with below commands ###############
+
+$ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+
+$ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+
+$ kubectl version --client
+
+########## Install AWS ClI in K8S_Client_Machine with below commands ##############
+
+$ curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+$ sudo yum install unzip
+$ unzip awscliv2.zip
+$ sudo ./aws/install
+
+############ Configure AWS Cli with Credentials ###############
+
+Access Key ID : AKIA4MGQ5UW7R76
+Secret Access Key : ZoZZW+063Km49zi19FbPC3Ijo15auV
+
+$ aws configure
+
+Note: We can use root user accesskey and secret key access
+
+##########################################################
+
+$ aws eks list-clusters
+
+$ ls ~/.
+
+#############  Update kubeconfig file in remote machine from cluster using below command ##############
+$ aws eks update-kubeconfig --name <cluster-name> --region ap-south-1
+############# ################################################################### ##############
+
+
+Step-5 ) Create IAM role for EKS worker nodes (usecase as EC2) with below policies
+
+		a) AmazonEKSWorkerNodePolicy
+		b) AmazonEKS_CNI_Policy
+		c) AmazonEC2ContainerRegistryReadOnly
+		
+Step-6) Create Worker Node Group 
+
+-> Go to cluster -> Compute -> Node Group
+
+-> Select the Role we have created for WorkerNodes
+
+-> Use t2.large
+
+-> Min 2 and Max 5 
+
+
+Step-7) Once Node Group added then check nodes in K8s_client_machine 
+
+$ kubectl get nodes
+
+$ kubectl get pods --all-namespaces
+
+Step-8) Create POD and Expose the POD using NodePort service
+
+Note: Enable NODE PORT in security Group to access that in our browser
+
+-------------------------------------------------------------------------------------------------------
+
+##################
+Helm Installation
+##################
+
+$ curl -fsSl -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+
+$ chmod 700 get_helm.sh
+
+$ ./get_helm.sh
+
+$ helm
+
+-> check do we have metrics server on the cluster
+
+$ kubectl top pods
+
+$ kubectl top nodes
+
+# check helm repos 
+$ helm repo ls
+
+# Before you can install the chart you will need to add the metrics-server repo to
+$ helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+
+# Install the chart
+$ helm upgrade --install metrics-server metrics-server/metrics-server
+
+$ helm list
+
+$ helm delete <release-name>
+-----------------------------------------------------------------------------------------------------
+
+************* Install Kubernetes on Master Node *************
+
+
+
+===================== Master & Worker Nodes Common Commands Execution start=========================
+
+
+# Upgrade apt packages
+$ sudo apt-get update
+
+#Create configuration file for containerd:
+$ cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf overlay br_netfilter 
+EOF
+
+#Load modules:
+
+$ sudo modprobe overlay
+$ sudo modprobe br_netfilter
+
+
+#Set system configurations for Kubernetes networking:
+
+$ cat <<EOF | sudo tee /etc/sysctl.d/99-kubernetes-cri.conf
+net.bridge.bridge-nf-call-iptables = 1
+net.ipv4.ip_forward = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+EOF
+
+
+#Apply new settings:
+$ sudo sysctl --system
+
+#Install containerd:
+
+$ sudo apt-get update && sudo apt-get install -y containerd
+
+
+# Create default configuration file for containerd:
+
+$ sudo mkdir -p /etc/containerd
+
+
+#Generate default containerd configuration and save to the newly created default file:
+
+$ sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+
+#Restart containerd to ensure new configuration file usage:
+
+$ sudo systemctl restart containerd
+
+
+#Verify that containerd is running.
+
+$ sudo systemctl status containerd
+
+
+#Disable swap:
+
+$ sudo swapoff -a
+
+
+#Disable swap on startup in /etc/fstab:
+
+$ sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+
+#Install dependency packages:
+
+$ sudo apt-get update && sudo apt-get install -y apt-transport-https curl
+
+
+# Download and add GPG key:
+
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+
+
+# Add Kubernetes to repository list:
+
+$ cat <<EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+
+Update package listings:
+
+$ sudo apt-get update
+
+
+# Install Kubernetes packages (Note: If you get a dpkg lock message, just wait a minute or two before trying the command again):
+
+$ sudo apt-get install -y  kubelet kubeadm kubectl kubernetes-cni nfs-common
+
+
+# Turn off automatic updates:
+
+$ sudo apt-mark hold kubelet kubeadm kubectl kubernetes-cni nfs-common
+
+
+=====================Common Commands Execution End=========================================
+
+
+=================Only Master Node Commands Execution Start===================================
+
+
+Initialize the Cluster-
+
+Initialize the Kubernetes cluster on the control plane node using kubeadm 
+(Note: This is only performed on the Control Plane Node):
+
+$ sudo kubeadm init
+
+Note: if we will get an error as "[ERROR NumCPU]: the number of available CPUs 1 is less than the required 2"
+Kubeadm runs a series of pre-flight checks to validate the system state before making changes.
+
+This error means the host don't have minimum requirement of 2 CPU. 
+You can ignore the error if you still want to go ahead and install kubernetes on this host.
+
+sudo kubeadm init --ignore-preflight-errors=NumCPU
+
+
+
+# Set kubectl access:
+
+mkdir -p $HOME/.kube
+
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+
+# Test access to cluster:
+
+$ kubectl get nodes
+
+
+# Install the Calico Network Add-On -
+
+# On the Control Plane Node, install Calico Networking:
+
+$ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+
+$ kubectl get nodes
+
+
+Join the Worker Nodes to the Cluster
+
+In the Control Plane Node, create the token and copy the kubeadm join command (NOTE:The join command can also be found in the output from kubeadm init command):
+
+$ kubeadm token create --print-join-command
+
+Note : In both Worker Nodes, paste the kubeadm join command to join the cluster. Use sudo to run it as root:
+
+sudo kubeadm join ...
+In the Control Plane Node, view cluster status (Note: You may have to wait a few moments to allow all nodes to become ready):
+
+#command to join other nodes as master
+
+
+Validate the setup
+==================
+kubectl get nodes
+--------------------------------------------------------------------------------------------------------
+
+
+############################
+ Install Minikube
+#######################
+
+Install Docker
+$  sudo apt update && apt -y install docker.io
+
+ Install kubectl
+$  curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl &&   chmod +x ./kubectl && sudo mv ./kubectl /usr/local/bin/kubectl
+
+ Install Minikube
+$  curl -Lo minikube https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64 && chmod +x minikube && sudo mv minikube /usr/local/bin/
+
+ Start Minikube
+$  apt install conntrack
+$  minikube start --vm-driver=none
+$  minikube status
+----------------------------------------------------------------------------------------------------------
+
+########################
+Grafana & Prometheus
+#########################
+
+#########################################
+How to deploy Grafana & Prometheus in K8S
+##########################################
+
+-> Most Efficient way is using Helm Chart to deploy Prometheus Operator
+
+
+##########################
+Install Prometheus & Grafana
+##########################
+
+# Add the latest helm repository in Kubernetes
+$ helm repo add stable https://charts.helm.sh/stable
+
+# Add prometheus repo to helm
+$ helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+
+# Update Helm Repo
+$ helm repo update
+
+# Search Repo
+$ helm search repo prometheus-community
+
+# install prometheus
+$ helm install stable prometheus-community/kube-prometheus-stack
+
+# Get all pods 
+$ kubectl get pods
+
+Node: You should see prometheus pods running
+
+# Check the services 
+$ kubectl get svc
+
+# By default prometheus and grafana service is available within the cluster using ClusterIP, to access them outside lets change it either NodePort or Loadbalancer.
+
+$ kubectl edit svc stable-kube-prometheus-sta-prometheus
+
+# Now edit the grafana service
+$ kubectl edit svc stable-grafana
+
+
+# Verify the service if changed to LoadBalancer
+$ kubectl get svc
+
+
+To access Prometheus web interface copy Loadbalancer URL and port number 9090
+
+To access Grafana web interface copy Loadbalancer URL and port number 80
+
+UserName: admin
+Password: prom-operator
+
+
+##########
+ELK Stack
+##########
+
+-> The ELK Stack is a collection of three open-source products — Elasticsearch, Logstash, and Kibana
+
+-> ELK stack provides centralized logging in order to identify problems with servers or applications
+
+-> It allows you to search all the logs in a single place
+
+
+E stands for : Elastic Search --> It is used to store logs
+
+L stands for : Log Stash --> It is used for processing logs
+
+K stands for : Kibana --> It is an visualization tool
+
+
+FileBeat : Log files
+
+MetricBeat : Metrics
+
+PacketBeat : Network data
+
+HeartBeat : Uptime Monitoring
+
+
+->  Filebeat collect data from the log files and sends it to logstash
+
+-> Logstash enhances the data and sends it to Elastic search
+
+-> Elastic search stores and indexes the data
+
+-> Kibana displays the datas stored in Elastic Search
+
+
+#####################
+Installation using HELM
+#####################
+
+
+Pre-requisites : 
+
+EKS Cluster 
+Nodes : 4 GB RAM
+Client Machine with kubectl & helm configured
+
+$ kubectl create ns efk
+
+$ kubectl get ns
+
+$ helm ls
+
+$ helm repo add elastic https://helm.elastic.co
+
+$ helm repo ls
+
+$ helm show values elastic/elasticsearch >> elasticsearch.values
+
+$ vi elasticsearch.values
+
+-> replicas as 1 & masternodes as 1
+
+$ helm install elasticsearch elastic/elasticsearch -f elasticsearch.values -n efk
+
+$ helm ls -n efk
+
+$ kubectl get all -n efk
+
+$ helm show values elastic/kibana >> kibana.values
+
+$ vi kibana.values
+
+-> Set replicas as 1
+
+-> Change Service Type from ClusterIP to LoadBalancer
+
+-> Change Port to 80
+
+
+$ helm install kibana elastic/kibana -f kibana.values -n efk
+
+$ kubectl get all -n efk
+
+$ helm install filebeat elastic/filebeat -n efk
+
+$ helm install metricbeat elastic/metricbeat -n efk
+
+
+Note: Access Kibana using Load Balancer DNS
+
